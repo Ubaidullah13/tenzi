@@ -3,7 +3,7 @@ import './App.css';
 import Die from './components/Die'
 import {nanoid} from "nanoid"
 import Confetti from 'react-confetti'
-
+var count = 0;
 function App() {
 
   const [dice, setDice] = React.useState(allNewDice())  // Setting 10 Dices state
@@ -21,7 +21,9 @@ function App() {
     if( allHeld && allSameValue)
     {
       setTenzies(true)
-      console.log("You Won")
+      const localStorageCount = JSON.parse(localStorage.getItem('count'))
+      if( localStorageCount === 0 || localStorageCount > count)
+        localStorage.setItem('count', JSON.stringify(count));
     }
 
   }, [dice] )
@@ -33,6 +35,7 @@ function App() {
     {
         setDice(allNewDice())
         setTenzies(false)
+        count = 0
     }
     else
     {
@@ -41,6 +44,7 @@ function App() {
         isHeld: false,
         id: nanoid()
       }));
+      count++;
     }
   }
 
@@ -78,7 +82,12 @@ function App() {
 
         </div>
         <button className="roll-dice" onClick={rollDice}>{tenzies ? "New Game" : "Roll"}</button>
-        {tenzies && <h4>You Won</h4>}
+        {tenzies && (<div className="won">
+                      <h4>You Won</h4>
+                      <h5>Dice Rolls: {count} times</h5>
+                      <h5>Best: {JSON.parse(localStorage.getItem('count'))} times</h5>
+                    </div>
+          )}
       </main>
   );
 }
